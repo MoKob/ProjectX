@@ -28,5 +28,5 @@ BOOST_AUTO_TEST_CASE(construct_undirected) {
       project_x::graph::ForwardStarGraphFactory::produce_directed_from_edges(
           7, edges);
 
-  BOOST_CHECK_EQUAL(true, true);
+  BOOST_CHECK_EQUAL(graph.number_of_nodes(), 7);
 }
