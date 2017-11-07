@@ -1,0 +1,39 @@
+codecov:
+  token: cc6d276f-1e8f-4679-a654-4fcd85fb1693
+
+coverage:
+  status:
+    project:
+      default:
+        enabled: yes
+        target: auto
+        threshold: 0.5% # allow minimal decreases in coverage
+        if_no_uploads: error
+        if_ci_failed: error
+        paths: null
+
+    patch:
+      default:
+        enabled: yes
+        target: 95%
+        if_no_upload: error
+        if_ci_failed: error
+        paths: null
+
+  ignore:
+    - test/
+    - data/
+    - mason_packages/
+    - /usr/include/
+    - *CMakeLists\.txt
+    - *\.pb\.cc
+    - *\.pb\.h
+    - .clang-format
+    - *\.proto
+    - *\.md
+    - .gitignore
+    - src/apps
+
+comment:
+  layout: "header, diff"
+  behavior: default  # update if exists else create new
