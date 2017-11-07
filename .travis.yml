@@ -1,0 +1,45 @@
+language: generic
+
+# build master and vX.X.X-* branches
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/`
+
+# basic cache setup
+cache:
+  - ccache
+  - apt
+
+dist: trusty
+sudo: required
+
+os:
+  - linux
+
+env:
+  - CMAKE_BUILD_TYPE=Debug COVERAGE=On
+  - CMAKE_BUILD_TYPE=Release
+
+matrix:
+  fast_finish:true
+
+addons:
+  apt: 
+    sources: ['ubuntu-toolchain-r-test']
+    packages: ['g++-6', 'libboost-all-dev', 'lcov']
+
+before_script:
+  - cd ${TRAVIS_BUILD_DIR}
+  - lcov --directory . --zerocounters # clean cached files
+
+after_success:
+  - cd ${TRAVIS_BUILD_DIR}
+  - |
+    if [ -n "${COVERAGE}" ]; then
+      lcov --directory . --capture --output-file coverage.info # capture coverage info
+      lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+      lcov --list coverage.info #debug info
+      # Uploading report to CodeCov
+      bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    fi
