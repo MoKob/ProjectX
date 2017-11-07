@@ -8,6 +8,8 @@ set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 set(VERSION_TAG )
 
+option(COVERAGE "Link coverage libraries and generate code coverage data" OFF)
+
 # Compilation
 add_compile_options(${CMAKE_CXX_FLAGS} -std=c++14)
 add_compile_options(${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden)
@@ -28,6 +30,16 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 set(BOOST_COMPONENTS unit_test_framework)
 find_package (Boost 1.62 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
+
+if(COVERAGE)
+  if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(MAYBE_COVERAGE_LIBRARIES "-lgcov")
+    add_compile_options(${CMAKE_CXX_FLAGS} -ftest-coverage)
+    add_compile_options(${CMAKE_CXX_FLAGS} -fprofile-arcs)
+  else()
+    message(FATAL_ERROR "Configuration unreasonable: coverage requires debug mode.")
+  endif()
+endif()
 
 # Sub-Projects
 add_subdirectory(src/graph)
