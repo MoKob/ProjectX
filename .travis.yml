@@ -27,11 +27,42 @@ matrix:
 addons:
   apt: 
     sources: ['ubuntu-toolchain-r-test']
-    packages: ['g++-6', 'libboost-all-dev', 'lcov']
+    packages: ['g++-7', 'libboost-all-dev', 'lcov']
+
+before_install:
+  - export CC='gcc-7'
+  - export CXX='g++-7'
+  - export PROJECT_DIRECTORY=$(pwd)
+  - export DEPS_DIR=$HOME/deps
+  - mkdir -p ${DEPS_DIR}
+  - export BUILD_DIRECTORY=${PROJECT_DIRECTORY}/build
+  - mkdir -p ${BUILD_DIRECTORY}
+  - CMAKE_VERSION=3.7.2
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      pushd ${DEPS_DIR}
+      CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.[0-9]}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
+      mkdir -p cmake && travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      popd
+    fi
+    cmake --version
+
+install:
+  - pushd ${BUILD_DIRECTORY}
+  - cmake ${PROJECT_DIRECTORY} -DCMAKE_BUILD_TYPE=${BUILD_TYPE:-Debug} -DCOVERAGE=${COVERAGE:-OFF} ..
+  - make -j 2
+  - popd
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
   - lcov --directory . --zerocounters # clean cached files
+
+script:
+  - |
+    pushd ${BUILD_DIRECTORY}
+    ctest --verbose || travis_terminate 1;
+    popd
 
 after_success:
   - cd ${TRAVIS_BUILD_DIR}

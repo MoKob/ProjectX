@@ -29,7 +29,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.h.in
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 set(BOOST_COMPONENTS unit_test_framework)
-find_package (Boost 1.62 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
+find_package (Boost 1.54 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
 
 if(COVERAGE)
   if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
