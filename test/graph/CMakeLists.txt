@@ -1,1 +1,8 @@
-                                                                                                                                                                                                    
+set(testLIBS
+  Xgraph
+  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set(testINCLUDES
+  )
+
+add_unit_test(forward_star forward_star.cpp "${testLIBS}" "${testINCLUDES}")

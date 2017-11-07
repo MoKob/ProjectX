@@ -13,4 +13,6 @@ macro(add_unit_test target source libs includes)
              WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endmacro()
 
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+
 add_subdirectory(graph)
