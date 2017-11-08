@@ -2,8 +2,12 @@
 #define PROJECT_X_GRAPH_FORWARD_STAR_HPP_
 
 #include <boost/range/iterator_range.hpp>
+
 #include <cstdint>
+#include <utility>
 #include <vector>
+
+#include "iterator/pointer.hpp"
 
 namespace project_x {
 namespace graph {
@@ -13,8 +17,9 @@ class ForwardStarGraph {
 public:
   // defines for nodes
   using offset_storage = std::vector<std::uint64_t>;
-  using node_iterator = offset_storage::iterator;
-  using const_node_iterator = offset_storage::const_iterator;
+  using node_iterator = iterator::Pointer<std::uint64_t>;
+  using offset_ptr = std::uint64_t *;
+  using const_node_iterator = iterator::Pointer<std::uint64_t const>;
   using node_range = boost::iterator_range<node_iterator>;
   using const_node_range = boost::iterator_range<const_node_iterator>;
 
@@ -41,43 +46,53 @@ public:
   node_iterator node_end();
   const_node_iterator node_end() const;
 
-  node_iterator node(std::uint64_t const);
-  const_node_iterator node(std::uint64_t const) const;
-
   node_range nodes();
   const_node_range nodes() const;
 
   // access into the edges
   edge_iterator edges_begin();
   const_edge_iterator edges_begin() const;
-  edge_iterator edges_begin(const_node_iterator const);
-  const_edge_iterator edges_begin(const_node_iterator const) const;
+
   edge_iterator edges_begin(std::uint64_t const);
   const_edge_iterator edges_begin(std::uint64_t const) const;
+  const_edge_iterator edges_begin(const_node_iterator const) const;
+  edge_iterator edges_begin(node_iterator const);
+  edge_iterator edges_begin(offset_ptr const);
 
-  edge_iterator edges_end(const_node_iterator const);
-  const_edge_iterator edges_end(const_node_iterator const) const;
   edge_iterator edges_end(std::uint64_t const);
   const_edge_iterator edges_end(std::uint64_t const) const;
+  const_edge_iterator edges_end(const_node_iterator const) const;
+  edge_iterator edges_end(node_iterator const);
+  edge_iterator edges_end(offset_ptr const);
   edge_iterator edges_end();
   const_edge_iterator edges_end() const;
+  edge_iterator edge(std::uint64_t const);
+  const_edge_iterator edge(std::uint64_t const) const;
+
+  edge_iterator edge(node_iterator const);
+  edge_iterator edge(offset_ptr const);
+  const_edge_iterator edge(offset_ptr const) const;
 
   edge_range edges();
   const_edge_range edges() const;
-  edge_range edges(const_node_iterator const);
   edge_range edges(std::uint64_t const);
-  const_edge_range edges(const_node_iterator const) const;
   const_edge_range edges(std::uint64_t const) const;
+  const_edge_range edges(const_node_iterator const) const;
+  edge_range edges(node_iterator const);
+  edge_range edges(offset_ptr const);
 
   // translating into IDs
   std::uint64_t node_id(const_node_iterator const) const;
+  std::uint64_t node_id(node_iterator const) const;
+  std::uint64_t node_id(offset_ptr const) const;
   std::uint64_t edge_id(const_edge_iterator const) const;
+  std::uint64_t edge_id(edge_iterator const) const;
 
 private:
   // cannot construct without an appropriate factory
   ForwardStarGraph();
 
-  std::vector<std::size_t> node_offsets;
+  offset_storage node_offsets;
   storage_type edge_storage;
 
   // ensure that the respective factory is allowed to acces the graph
