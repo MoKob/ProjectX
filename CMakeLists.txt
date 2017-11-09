@@ -43,6 +43,7 @@ endif()
 
 # Sub-Projects
 add_subdirectory(src/graph)
+add_subdirectory(src/log)
 
 enable_testing()
 add_subdirectory(test)
