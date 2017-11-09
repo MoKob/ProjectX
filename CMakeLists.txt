@@ -23,12 +23,12 @@ add_compile_options(${CMAKE_CXX_FLAGS} -Wunreachable-code)
 add_compile_options(${CMAKE_CXX_FLAGS} -Wstrict-overflow=2)
 
 # General set-up
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.h.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.in
                ${CMAKE_CURRENT_SOURCE_DIR}/include/version.h)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-set(BOOST_COMPONENTS unit_test_framework)
+set(BOOST_COMPONENTS unit_test_framework system filesystem)
 find_package (Boost 1.54 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
 
 if(COVERAGE)
@@ -44,6 +44,7 @@ endif()
 # Sub-Projects
 add_subdirectory(src/graph)
 add_subdirectory(src/log)
+add_subdirectory(src/io)
 
 enable_testing()
 add_subdirectory(test)
