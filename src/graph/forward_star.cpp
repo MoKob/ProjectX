@@ -146,5 +146,10 @@ ForwardStarGraph::const_edge_range
 ForwardStarGraph::edges(const_node_iterator const itr) const {
   return {edges_begin(itr), edges_end(itr)};
 }
+
+void ForwardStarGraph::serialise(io::File &file) const {}
+
+void ForwardStarGraph::deserialise(io::File &file) {}
+
 } // namespace graph
 } // namespace project_x

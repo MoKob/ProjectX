@@ -7,13 +7,15 @@
 #include <utility>
 #include <vector>
 
+#include "io/file.hpp"
+#include "io/serialisable.hpp"
 #include "iterator/pointer.hpp"
 
 namespace project_x {
 namespace graph {
 
 // A forward star graph offers simple connectivity based on IDs
-class ForwardStarGraph {
+class ForwardStarGraph : public io::Serialisable {
 public:
   // defines for nodes
   using offset_storage = std::vector<std::uint64_t>;
@@ -87,6 +89,10 @@ public:
   std::uint64_t node_id(offset_ptr const) const;
   std::uint64_t edge_id(const_edge_iterator const) const;
   std::uint64_t edge_id(edge_iterator const) const;
+
+  // storing / restoring
+  void serialise(io::File &file) const final;
+  void deserialise(io::File &file) final;
 
 private:
   // cannot construct without an appropriate factory

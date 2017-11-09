@@ -1,5 +1,7 @@
 set(testLIBS
   Xgraph
+  Xio
+  ${Boost_SYSTEM_LIBRARY}
   ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set(testINCLUDES
