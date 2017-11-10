@@ -1,5 +1,6 @@
 #include "io/file.hpp"
 #include "io/exceptions.hpp"
+#include "log/logger.hpp"
 #include "version.h"
 
 #include <cstdint>
@@ -16,59 +17,67 @@ struct HeaderVersion {
 };
 
 // Check if a flag is set in the provided mode
-bool is_set(File::Mode mode, File::Mode flag) { return (mode & flag) == flag; }
-bool any_of(File::Mode mode, std::uint32_t flags) {
+bool is_set(mode::Enum mode, mode::Enum flag) { return (mode & flag) == flag; }
+bool any_of(mode::Enum mode, std::uint32_t flags) {
   return (mode & flags) != 0;
 }
 
 } // namespace detail
 
-File::File(boost::filesystem::path path_, Mode mode) : path(path_) {
+File::File(boost::filesystem::path path_, mode::Enum mode) : path(path_) {
   std::ios_base::openmode file_mode;
-  if (detail::is_set(mode, Mode::mREAD)) {
+
+  if (detail::is_set(mode, mode::mREAD)) {
     file_mode |= std::ios::in;
   }
 
-  if (detail::is_set(mode, Mode::mAPPEND)) {
+  if (detail::is_set(mode, mode::mAPPEND)) {
     file_mode |= std::ios_base::app;
-  } else if (detail::is_set(mode, Mode::mWRITE)) {
+  } else if (detail::is_set(mode, mode::mWRITE)) {
     file_mode |= std::ios_base::out;
   }
 
-  if (detail::is_set(mode, Mode::mBINARY)) {
+  if (detail::is_set(mode, mode::mBINARY)) {
     file_mode |= std::ios::binary;
   }
 
   stream.open(path.string(), file_mode);
+  if (!stream.is_open() && !stream.is_open())
+    throw std::invalid_argument{"Couldn't open: " + path.string() +
+                                ", Error: " + strerror(errno)};
 
-  if ((detail::is_set(mode, Mode::mWRITE) ||
-       detail::is_set(mode, Mode::mAPPEND)) &&
-      detail::is_set(mode, mVERSIONED))
+  if ((detail::is_set(mode, mode::mWRITE) ||
+       detail::is_set(mode, mode::mAPPEND)) &&
+      detail::is_set(mode, mode::mVERSIONED))
     write_version();
 
-  if (detail::is_set(mode, Mode::mREAD) && detail::is_set(mode, mVERSIONED))
+  if (detail::is_set(mode, mode::mREAD) &&
+      detail::is_set(mode, mode::mVERSIONED))
     read_and_check_version(mode);
 }
+
+void File::close() { stream.close(); }
 
 void File::write_version() {
   detail::HeaderVersion version = {version_major, version_minor, version_patch};
   write_pod(version);
 }
 
-void File::read_and_check_version(File::Mode mode) {
+void File::read_and_check_version(mode::Enum mode) {
+  log::Logger logger;
   detail::HeaderVersion version;
   read_pod(version);
 
-  auto const log_or_throw = [mode](std::string message) {
-    if (detail::is_set(mode, Mode::mVERSIONED_WARNING)) {
-      // log::Message::raise(log::Level::WARNING, std::move(message));
+  auto const log_or_throw = [&logger, mode](std::string message) {
+    if (detail::is_set(mode, mode::mVERSIONED_WARNING)) {
+      logger.message(log::Level::WARNING, std::move(message));
     } else {
       throw VersionMismatch(std::move(message));
     }
   };
 
   bool requires_major =
-      detail::any_of(mode, Mode::mVERSIONED_EXACT | Mode::mVERSIONED_MAJOR);
+      detail::any_of(mode, mode::mVERSIONED_EXACT | mode::mVERSIONED_MAJOR);
   if (requires_major && version_major != version.major) {
     std::string message = "Major version mismatch. Got " +
                           std::to_string(version.major) + " but expected " +

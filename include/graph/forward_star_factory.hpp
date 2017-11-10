@@ -3,6 +3,8 @@
 
 #include "graph/forward_star.hpp"
 
+#include <boost/filesystem/path.hpp>
+
 #include <algorithm>
 #include <cstdint>
 #include <exception>
@@ -34,6 +36,9 @@ public:
   static ForwardStarGraph
   produce_directed_from_edges(std::uint64_t const number_of_nodes,
                               container &edges);
+
+  static ForwardStarGraph
+  produce_from_file(boost::filesystem::path const &path);
 };
 
 template <typename container, typename extractor_type>
