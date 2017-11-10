@@ -3,12 +3,13 @@ cmake_minimum_required(VERSION 3.7)
 project(X)
 
 # Configuration of the version to test files/compatibilities
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 0)
-set(VERSION_PATCH 0)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 2)
+set(VERSION_PATCH 3)
 set(VERSION_TAG )
 
 option(COVERAGE "Link coverage libraries and generate code coverage data" OFF)
+option(SANITIZE "Enable adress sanitizer" OFF)
 
 # Compilation
 add_compile_options(${CMAKE_CXX_FLAGS} -std=c++14)
@@ -39,6 +40,11 @@ if(COVERAGE)
   else()
     message(FATAL_ERROR "Configuration unreasonable: coverage requires debug mode.")
   endif()
+endif()
+
+if(SANITIZE)
+    add_compile_options(${CMAKE_CXX_FLAGS} -fsanitize=address)
+    link_libraries(${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address)
 endif()
 
 # Sub-Projects

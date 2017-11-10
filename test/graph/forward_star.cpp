@@ -1,5 +1,7 @@
 #include "graph/forward_star.hpp"
 #include "graph/forward_star_factory.hpp"
+#include "io/file.hpp"
+#include "log/logger.hpp"
 
 #include <algorithm>
 #include <exception>
@@ -9,6 +11,8 @@
 #define BOOST_TEST_MODULE ForwardStarGraph
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
+
+using namespace project_x;
 
 struct Edge {
   std::uint64_t source, target;
@@ -112,8 +116,7 @@ BOOST_AUTO_TEST_CASE(construct_undirected) {
   // define a basic directed graph
   std::vector<Edge> edges{{0, 1}, {2, 1}, {1, 2}, {1, 0}, {3, 4}, {3, 5}};
   auto graph =
-      project_x::graph::ForwardStarGraphFactory::produce_directed_from_edges(
-          7, edges);
+      graph::ForwardStarGraphFactory::produce_directed_from_edges(7, edges);
   std::stable_sort(
       edges.begin(), edges.end(),
       [](auto const &lhs, auto const &rhs) { return lhs.source < rhs.source; });
@@ -135,8 +138,7 @@ BOOST_AUTO_TEST_CASE(const_construct_undirected) {
   // define a basic directed graph
   std::vector<Edge> edges{{0, 1}, {2, 1}, {1, 2}, {1, 0}, {3, 4}, {3, 5}};
   auto const graph =
-      project_x::graph::ForwardStarGraphFactory::produce_directed_from_edges(
-          7, edges);
+      graph::ForwardStarGraphFactory::produce_directed_from_edges(7, edges);
   std::stable_sort(
       edges.begin(), edges.end(),
       [](auto const &lhs, auto const &rhs) { return lhs.source < rhs.source; });
@@ -148,14 +150,37 @@ BOOST_AUTO_TEST_CASE(throw_on_bound) {
   std::vector<Edge> edges{{0, 0}, {1, 0}};
   // throw on more sources than nodes
   BOOST_CHECK_THROW(
-      project_x::graph::ForwardStarGraphFactory::produce_directed_from_edges(
-          1, edges),
+      graph::ForwardStarGraphFactory::produce_directed_from_edges(1, edges),
       std::out_of_range);
 
   edges.push_back({1, 2});
   // throw on larger target
   BOOST_CHECK_THROW(
-      project_x::graph::ForwardStarGraphFactory::produce_directed_from_edges(
-          2, edges),
+      graph::ForwardStarGraphFactory::produce_directed_from_edges(2, edges),
       std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(graph_io) {
+  log::Logger logger;
+  logger.set_stream(&std::cout);
+  std::vector<Edge> edges{{0, 1}, {2, 1}, {1, 2}};
+  auto const graph =
+      graph::ForwardStarGraphFactory::produce_directed_from_edges(3, edges);
+
+  io::File out("tmp.gr",
+               io::mode::mWRITE | io::mode::mBINARY | io::mode::mVERSIONED);
+  graph.serialise(out);
+  out.close();
+
+  auto const deserialised_graph =
+      graph::ForwardStarGraphFactory::produce_from_file("tmp.gr");
+
+  auto itr = graph.edges_begin();
+  auto des_itr = deserialised_graph.edges_begin();
+  for (; itr != graph.edges_end() && des_itr != deserialised_graph.edges_end();
+       ++itr, ++des_itr) {
+    BOOST_CHECK_EQUAL(*itr, *des_itr);
+  }
+  BOOST_CHECK(itr == graph.edges_end());
+  BOOST_CHECK(des_itr == deserialised_graph.edges_end());
 }

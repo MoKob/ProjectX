@@ -10,8 +10,8 @@ CmakeLists.txt
 
 namespace project_x {
 const constexpr std::uint32_t version_major = @VERSION_MAJOR@;
-const constexpr std::uint32_t version_minor = @VERSION_MAJOR@;
-const constexpr std::uint32_t version_patch = @VERSION_MAJOR@;
+const constexpr std::uint32_t version_minor = @VERSION_MINOR@;
+const constexpr std::uint32_t version_patch = @VERSION_PATCH@;
 }
 
 #endif /* PROJECT_X_VERSION_H_IN_ */
