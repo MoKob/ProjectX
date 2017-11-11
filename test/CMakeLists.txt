@@ -16,4 +16,5 @@ endmacro()
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 
 add_subdirectory(graph)
+add_subdirectory(io)
 add_subdirectory(logging)
