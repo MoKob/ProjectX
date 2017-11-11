@@ -28,13 +28,11 @@ File::File(boost::filesystem::path path_, mode::Enum mode) : path(path_) {
   std::ios_base::openmode file_mode;
 
   if (detail::is_set(mode, mode::mREAD)) {
-    file_mode |= std::ios::in;
-  }
-
-  if (detail::is_set(mode, mode::mAPPEND)) {
-    file_mode |= std::ios_base::app;
+    file_mode = std::ios::in;
+  } else if (detail::is_set(mode, mode::mAPPEND)) {
+    file_mode = std::ios_base::app;
   } else if (detail::is_set(mode, mode::mWRITE)) {
-    file_mode |= std::ios_base::out;
+    file_mode = std::ios_base::out;
   }
 
   if (detail::is_set(mode, mode::mBINARY)) {
@@ -42,7 +40,7 @@ File::File(boost::filesystem::path path_, mode::Enum mode) : path(path_) {
   }
 
   stream.open(path.string(), file_mode);
-  if (!stream.is_open() && !stream.is_open())
+  if (!stream)
     throw std::invalid_argument{"Couldn't open: " + path.string() +
                                 ", Error: " + strerror(errno)};
 
@@ -76,8 +74,9 @@ void File::read_and_check_version(mode::Enum mode) {
     }
   };
 
-  bool requires_major =
-      detail::any_of(mode, mode::mVERSIONED_EXACT | mode::mVERSIONED_MAJOR);
+  auto const requires_major = detail::any_of(
+      mode,
+      mode::mVERSIONED_EXACT | mode::mVERSIONED_MINOR | mode::mVERSIONED_MAJOR);
   if (requires_major && version_major != version.major) {
     std::string message = "Major version mismatch. Got " +
                           std::to_string(version.major) + " but expected " +
@@ -85,14 +84,17 @@ void File::read_and_check_version(mode::Enum mode) {
     log_or_throw(std::move(message));
   }
 
-  if (version_minor != version.minor) {
+  auto const requires_minor =
+      detail::any_of(mode, mode::mVERSIONED_EXACT | mode::mVERSIONED_MINOR);
+  if (requires_minor && (version_minor != version.minor)) {
     std::string message = "Minor version mismatch. Got " +
                           std::to_string(version.minor) + " but expected " +
                           std::to_string(version_minor);
     log_or_throw(std::move(message));
   }
 
-  if (version_patch != version.patch) {
+  auto const requires_patch = detail::is_set(mode, mode::mVERSIONED_EXACT);
+  if (requires_patch && (version_patch != version.patch)) {
     std::string message = "Patch version mismatch. Got " +
                           std::to_string(version.patch) + " but expected " +
                           std::to_string(version_patch);

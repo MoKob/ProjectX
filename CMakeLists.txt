@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.7)
 project(X)
 
 # Configuration of the version to test files/compatibilities
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 2)
-set(VERSION_PATCH 3)
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
 set(VERSION_TAG )
 
 option(COVERAGE "Link coverage libraries and generate code coverage data" OFF)
