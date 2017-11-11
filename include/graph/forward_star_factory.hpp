@@ -55,7 +55,7 @@ ForwardStarGraph ForwardStarGraphFactory::produce_directed_from_edges(
   auto edge = edges.begin();
   for (std::uint64_t node = 0; node < number_of_nodes; ++node) {
     // add all edges to the graph
-    while (extractor.source(*edge) == node) {
+    while (edge != edges.end() && extractor.source(*edge) == node) {
       auto target = extractor.target(*edge);
       if (target >= number_of_nodes)
         throw std::out_of_range{
