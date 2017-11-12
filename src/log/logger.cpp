@@ -8,8 +8,8 @@ namespace project_x {
 namespace log {
 
 namespace {
-const constexpr char *log_level_names[] = {"NONE",     "DEBUG",   "ERROR",
-                                           "CRITICAL", "WARNING", "INFO"};
+const constexpr char *log_level_names[] = {"DEBUG",   "ERROR", "CRITICAL",
+                                           "WARNING", "INFO",  "NONE"};
 
 // The logger allows synchronised output to a stream. Requires set_stream to be
 // called before messaging anything
