@@ -9,7 +9,7 @@
 namespace project_x {
 namespace log {
 
-enum class Level { NONE, DEBUG, ERROR, CRITICAL, WARNING, INFO };
+enum class Level { DEBUG, ERROR, CRITICAL, WARNING, INFO, NONE };
 
 // Logger that provides means to output synchronised messages to a dedicated
 // stream
