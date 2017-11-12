@@ -19,7 +19,7 @@ template <typename edge> struct SourceTargetExtractor {
 };
 } // namespace details
 
-class ForwardStarGraphFactory {
+class ForwardStarFactory {
 public:
   // create a forward star graph representation with directed edges. The edges
   // provided are sorted to represent be in the order of edges within the graph
@@ -27,22 +27,21 @@ public:
   // The extractor has to provide a function source/target that returns this ID
   // Runs in O(|E| log |E|) and requires O(|V| + |E|) additional space
   template <typename container, typename extractor_type>
-  static ForwardStarGraph
+  static ForwardStar
   produce_directed_from_edges(std::uint64_t const number_of_nodes,
                               container &edges, extractor_type extractor);
 
   // helper to allow construction with default extractor
   template <typename container>
-  static ForwardStarGraph
+  static ForwardStar
   produce_directed_from_edges(std::uint64_t const number_of_nodes,
                               container &edges);
 
-  static ForwardStarGraph
-  produce_from_file(boost::filesystem::path const &path);
+  static ForwardStar produce_from_file(boost::filesystem::path const &path);
 };
 
 template <typename container, typename extractor_type>
-ForwardStarGraph ForwardStarGraphFactory::produce_directed_from_edges(
+ForwardStar ForwardStarFactory::produce_directed_from_edges(
     std::uint64_t const number_of_nodes, container &edges,
     extractor_type extractor) {
   auto const by_source = [&extractor](auto const &lhs, auto const &rhs) {
@@ -52,7 +51,7 @@ ForwardStarGraph ForwardStarGraphFactory::produce_directed_from_edges(
   // sort edges, so that they are grouped by source
   std::stable_sort(edges.begin(), edges.end(), by_source);
 
-  ForwardStarGraph graph;
+  ForwardStar graph;
   graph.node_offsets.reserve(number_of_nodes + 1);
   graph.node_offsets.push_back(0);
   graph.edge_storage.reserve(edges.size());
@@ -82,7 +81,7 @@ ForwardStarGraph ForwardStarGraphFactory::produce_directed_from_edges(
 }
 // helper to allow construction with default extractor
 template <typename container>
-ForwardStarGraph ForwardStarGraphFactory::produce_directed_from_edges(
+ForwardStar ForwardStarFactory::produce_directed_from_edges(
     std::uint64_t const number_of_nodes, container &edges) {
   return produce_directed_from_edges(
       number_of_nodes, edges,

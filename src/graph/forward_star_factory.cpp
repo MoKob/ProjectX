@@ -3,9 +3,9 @@
 
 namespace project_x {
 namespace graph {
-ForwardStarGraph ForwardStarGraphFactory::produce_from_file(
-    boost::filesystem::path const &path) {
-  ForwardStarGraph graph;
+ForwardStar
+ForwardStarFactory::produce_from_file(boost::filesystem::path const &path) {
+  ForwardStar graph;
   io::mode::Enum mode = io::mode::mREAD | io::mode::mBINARY |
                         io::mode::mVERSIONED | io::mode::mVERSIONED_EXACT |
                         io::mode::mVERSIONED_WARNING;

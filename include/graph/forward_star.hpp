@@ -15,7 +15,7 @@ namespace project_x {
 namespace graph {
 
 // A forward star graph offers simple connectivity based on IDs
-class ForwardStarGraph : public io::Serialisable {
+class ForwardStar : public io::Serialisable {
 public:
   // defines for nodes
   using offset_storage = std::vector<std::uint64_t>;
@@ -96,13 +96,13 @@ public:
 
 private:
   // cannot construct without an appropriate factory
-  ForwardStarGraph();
+  ForwardStar();
 
   offset_storage node_offsets;
   storage_type edge_storage;
 
   // ensure that the respective factory is allowed to acces the graph
-  friend class ForwardStarGraphFactory;
+  friend class ForwardStarFactory;
 };
 
 } // namespace graph
