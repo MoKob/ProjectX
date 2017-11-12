@@ -2,6 +2,7 @@
 #define PROJECT_X_GRAPH_FORWARD_STAR_FACTORY_HPP_
 
 #include "graph/forward_star.hpp"
+#include "graph/id.hpp"
 
 #include <boost/filesystem/path.hpp>
 
@@ -14,8 +15,8 @@ namespace graph {
 
 namespace details {
 template <typename edge> struct SourceTargetExtractor {
-  std::uint64_t source(edge const &e) { return e.source; }
-  std::uint64_t target(edge const &e) { return e.target; }
+  NodeID source(edge const &e) { return e.source; }
+  NodeID target(edge const &e) { return e.target; }
 };
 } // namespace details
 
@@ -57,7 +58,7 @@ ForwardStar ForwardStarFactory::produce_directed_from_edges(
   graph.edge_storage.reserve(edges.size());
 
   auto edge = edges.begin();
-  for (std::uint64_t node = 0; node < number_of_nodes; ++node) {
+  for (NodeID node = 0; node < number_of_nodes; ++node) {
     // add all edges to the graph
     while (edge != edges.end() && extractor.source(*edge) == node) {
       auto target = extractor.target(*edge);

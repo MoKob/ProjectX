@@ -1,5 +1,6 @@
 #include "graph/forward_star.hpp"
 #include "graph/forward_star_factory.hpp"
+#include "graph/id.hpp"
 #include "io/file.hpp"
 #include "log/logger.hpp"
 
@@ -15,7 +16,7 @@
 using namespace project_x;
 
 struct Edge {
-  std::uint64_t source, target;
+  NodeID source, target;
 };
 
 namespace details {
@@ -27,7 +28,7 @@ void run_test(graph_type &graph, std::vector<Edge> const &edges) {
     auto edge_end = graph.edges_end();
 
     // iterating through the edges by range / id / itr should all yield the same
-    std::uint64_t id = 0;
+    NodeID id = 0;
     for (auto target : graph.edges()) {
       BOOST_CHECK(edge_itr != edge_end);
       BOOST_CHECK_EQUAL(target, *edge_itr);
@@ -42,7 +43,7 @@ void run_test(graph_type &graph, std::vector<Edge> const &edges) {
   {
     std::size_t eid = 0;
     auto node_itr = graph.node_begin();
-    std::uint64_t node_id = 0;
+    NodeID node_id = 0;
     for (auto node : graph.nodes()) {
       BOOST_CHECK(*node_itr == node);
       BOOST_CHECK_EQUAL(graph.node_id(node), node_id);

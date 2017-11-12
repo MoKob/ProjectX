@@ -41,20 +41,20 @@ ForwardStar::const_node_range ForwardStar::nodes() const {
 }
 
 // Translating into IDs
-std::uint64_t ForwardStar::node_id(node_iterator const node_itr) const {
+NodeID ForwardStar::node_id(node_iterator const node_itr) const {
   return *node_itr - &node_offsets.front();
 }
-std::uint64_t ForwardStar::node_id(const_node_iterator const node_itr) const {
+NodeID ForwardStar::node_id(const_node_iterator const node_itr) const {
   return std::distance(&node_offsets.front(), *node_itr);
 }
-std::uint64_t ForwardStar::node_id(offset_ptr const node_itr) const {
+NodeID ForwardStar::node_id(offset_ptr const node_itr) const {
   return node_itr - &node_offsets.front();
 }
 
-std::uint64_t ForwardStar::edge_id(const_edge_iterator const edge_itr) const {
+EdgeID ForwardStar::edge_id(const_edge_iterator const edge_itr) const {
   return std::distance(edge_storage.cbegin(), edge_itr);
 }
-std::uint64_t ForwardStar::edge_id(edge_iterator const edge_itr) const {
+EdgeID ForwardStar::edge_id(edge_iterator const edge_itr) const {
   return std::distance(edge_storage.begin(),
                        static_cast<const_edge_iterator>(edge_itr));
 }
@@ -66,11 +66,11 @@ ForwardStar::const_edge_iterator ForwardStar::edges_begin() const {
   return edge_storage.cbegin();
 }
 
-ForwardStar::edge_iterator ForwardStar::edges_begin(std::uint64_t const id) {
+ForwardStar::edge_iterator ForwardStar::edges_begin(NodeID const id) {
   return edge_storage.begin() + node_offsets[id];
 }
 ForwardStar::const_edge_iterator
-ForwardStar::edges_begin(std::uint64_t const id) const {
+ForwardStar::edges_begin(NodeID const id) const {
   return edge_storage.cbegin() + node_offsets[id];
 }
 ForwardStar::edge_iterator ForwardStar::edges_begin(node_iterator const itr) {
@@ -84,11 +84,10 @@ ForwardStar::edge_iterator ForwardStar::edges_begin(offset_ptr itr) {
   return edge_storage.begin() + *itr;
 }
 
-ForwardStar::edge_iterator ForwardStar::edges_end(std::uint64_t const id) {
+ForwardStar::edge_iterator ForwardStar::edges_end(NodeID const id) {
   return edge_storage.begin() + node_offsets[id + 1];
 }
-ForwardStar::const_edge_iterator
-ForwardStar::edges_end(std::uint64_t const id) const {
+ForwardStar::const_edge_iterator ForwardStar::edges_end(NodeID const id) const {
   return edge_storage.cbegin() + node_offsets[id + 1];
 }
 ForwardStar::edge_iterator ForwardStar::edges_end(node_iterator const itr) {
@@ -108,11 +107,10 @@ ForwardStar::edge_iterator ForwardStar::edges_end() {
 ForwardStar::const_edge_iterator ForwardStar::edges_end() const {
   return edge_storage.cend();
 }
-ForwardStar::edge_iterator ForwardStar::edge(std::uint64_t const id) {
+ForwardStar::edge_iterator ForwardStar::edge(EdgeID const id) {
   return edge_storage.begin() + id;
 }
-ForwardStar::const_edge_iterator
-ForwardStar::edge(std::uint64_t const id) const {
+ForwardStar::const_edge_iterator ForwardStar::edge(EdgeID const id) const {
   return edge_storage.cbegin() + id;
 }
 
@@ -122,11 +120,10 @@ ForwardStar::edge_range ForwardStar::edges() {
 ForwardStar::const_edge_range ForwardStar::edges() const {
   return {edge_storage.cbegin(), edge_storage.cend()};
 }
-ForwardStar::edge_range ForwardStar::edges(std::uint64_t const node_id) {
+ForwardStar::edge_range ForwardStar::edges(NodeID const node_id) {
   return {edges_begin(node_id), edges_end(node_id)};
 }
-ForwardStar::const_edge_range
-ForwardStar::edges(std::uint64_t const node_id) const {
+ForwardStar::const_edge_range ForwardStar::edges(NodeID const node_id) const {
   return {edges_begin(node_id), edges_end(node_id)};
 }
 ForwardStar::edge_range ForwardStar::edges(node_iterator const itr) {
