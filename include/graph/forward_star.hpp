@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "graph/id.hpp"
 #include "io/file.hpp"
 #include "io/serialisable.hpp"
 #include "iterator/pointer.hpp"
@@ -26,7 +27,7 @@ public:
   using const_node_range = boost::iterator_range<const_node_iterator>;
 
   // defines for edges
-  using value_type = std::uint64_t;
+  using value_type = NodeID;
   using storage_type = std::vector<value_type>;
   using edge_iterator = storage_type::iterator;
   using const_edge_iterator = storage_type::const_iterator;
@@ -55,21 +56,21 @@ public:
   edge_iterator edges_begin();
   const_edge_iterator edges_begin() const;
 
-  edge_iterator edges_begin(std::uint64_t const);
-  const_edge_iterator edges_begin(std::uint64_t const) const;
+  edge_iterator edges_begin(NodeID const);
+  const_edge_iterator edges_begin(NodeID const) const;
   const_edge_iterator edges_begin(const_node_iterator const) const;
   edge_iterator edges_begin(node_iterator const);
   edge_iterator edges_begin(offset_ptr const);
 
-  edge_iterator edges_end(std::uint64_t const);
-  const_edge_iterator edges_end(std::uint64_t const) const;
+  edge_iterator edges_end(NodeID const);
+  const_edge_iterator edges_end(NodeID const) const;
   const_edge_iterator edges_end(const_node_iterator const) const;
   edge_iterator edges_end(node_iterator const);
   edge_iterator edges_end(offset_ptr const);
   edge_iterator edges_end();
   const_edge_iterator edges_end() const;
-  edge_iterator edge(std::uint64_t const);
-  const_edge_iterator edge(std::uint64_t const) const;
+  edge_iterator edge(EdgeID const);
+  const_edge_iterator edge(NodeID const) const;
 
   edge_iterator edge(node_iterator const);
   edge_iterator edge(offset_ptr const);
@@ -77,18 +78,18 @@ public:
 
   edge_range edges();
   const_edge_range edges() const;
-  edge_range edges(std::uint64_t const);
-  const_edge_range edges(std::uint64_t const) const;
+  edge_range edges(NodeID const);
+  const_edge_range edges(NodeID const) const;
   const_edge_range edges(const_node_iterator const) const;
   edge_range edges(node_iterator const);
   edge_range edges(offset_ptr const);
 
   // translating into IDs
-  std::uint64_t node_id(const_node_iterator const) const;
-  std::uint64_t node_id(node_iterator const) const;
-  std::uint64_t node_id(offset_ptr const) const;
-  std::uint64_t edge_id(const_edge_iterator const) const;
-  std::uint64_t edge_id(edge_iterator const) const;
+  NodeID node_id(const_node_iterator const) const;
+  NodeID node_id(node_iterator const) const;
+  NodeID node_id(offset_ptr const) const;
+  EdgeID edge_id(const_edge_iterator const) const;
+  EdgeID edge_id(edge_iterator const) const;
 
   // storing / restoring
   void serialise(io::File &file) const final;
