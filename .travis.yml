@@ -28,7 +28,7 @@ matrix:
 addons:
   apt: 
     sources: ['ubuntu-toolchain-r-test']
-    packages: ['g++-7', 'libboost-all-dev', 'lcov']
+    packages: ['g++-7', 'libboost-all-dev', 'lcov', 'python3']
 
 before_install:
   - export CC='gcc-7'
@@ -51,6 +51,7 @@ before_install:
 
 install:
   - pushd ${BUILD_DIRECTORY}
+  - python3 --version
   - cmake ${PROJECT_DIRECTORY} -DCMAKE_BUILD_TYPE=${BUILD_TYPE:-Debug} -DCOVERAGE=${COVERAGE:-OFF} ..
   - make -j 2
   - popd

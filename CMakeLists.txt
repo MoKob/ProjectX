@@ -29,8 +29,20 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.in
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-set(BOOST_COMPONENTS unit_test_framework system filesystem)
-find_package (Boost 1.54 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
+find_package(PythonLibs 3.4 REQUIRED)
+if(PYTHONLIBS_FOUND) 
+  message("-- Using Python: ${PYTHONLIBS_VERSION_STRING}")
+  string(REPLACE "." ";" VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
+  list(GET VERSION_LIST 0 PY_MAJOR)
+  list(GET VERSION_LIST 1 PY_MINOR)
+  set(BOOST_PYTHON_LIB "python-py${PY_MAJOR}${PY_MINOR}")
+  include_directories(SYSTEM ${PYTHON_INCLUDE_DIRS})
+else()
+  message(FATAL_ERROR "Failed to find a valid python version.")
+endif()
+
+set(BOOST_COMPONENTS unit_test_framework system filesystem ${BOOST_PYTHON_LIB})
+find_package(Boost 1.54 COMPONENTS REQUIRED ${BOOST_COMPONENTS})
 
 if(COVERAGE)
   if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
