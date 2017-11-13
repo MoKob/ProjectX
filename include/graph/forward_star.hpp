@@ -42,6 +42,7 @@ public:
 
   // the number of nodes in the graph. All nodes are labeled from 0 to n-1
   std::size_t number_of_nodes() const;
+  std::size_t number_of_edges() const;
 
   // access to nodes by id, begin/end or range
   node_iterator node_begin();
@@ -92,13 +93,10 @@ public:
   EdgeID edge_id(edge_iterator const) const;
 
   // storing / restoring
-  void serialise(io::File &file) const final;
-  void deserialise(io::File &file) final;
+  void serialise(io::File &file) const;
+  void deserialise(io::File &file);
 
 private:
-  // cannot construct without an appropriate factory
-  ForwardStar();
-
   offset_storage node_offsets;
   storage_type edge_storage;
 

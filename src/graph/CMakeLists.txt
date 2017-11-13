@@ -1,6 +1,7 @@
 set (graph_SOURCES
   forward_star.cpp
-  forward_star_factory.cpp)
+  forward_star_factory.cpp
+  routing.cpp)
 
 add_library(Xgraph STATIC
   ${graph_SOURCES})

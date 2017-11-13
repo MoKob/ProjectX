@@ -1,10 +1,11 @@
 #ifndef PROJECT_X_IO_SERIALISABLE_HPP_
 #define PROJECT_X_IO_SERIALISABLE_HPP_
 
-#include "io/file.hpp"
-
 namespace project_x {
 namespace io {
+
+class File;
+
 // Interface for all serialisable objects
 class Serialisable {
   virtual void serialise(File &file) const = 0;
