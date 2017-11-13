@@ -1,5 +1,6 @@
 #include "io/file.hpp"
 #include "io/exceptions.hpp"
+#include "io/serialisable.hpp"
 #include "log/logger.hpp"
 #include "version.h"
 
@@ -102,24 +103,14 @@ BOOST_AUTO_TEST_CASE(unversioned_vector_reading) {
   std::vector<int> data = {42, 1, 42, 1, 42};
   {
     io::File file("unversioned.tmp", io::mode::mWRITE | io::mode::mBINARY);
-    file.write_pod(data);
+    file.write_container(data);
   }
 
-  // no read the data
+  // now read the data
   {
-    std::ifstream ifs("unversioned.tmp");
-    std::vector<int> tmp;
-    tmp.resize(data.size());
-    ifs.read(reinterpret_cast<char *>(tmp.data()), sizeof(int) * tmp.size());
-    for (std::size_t i = 0; i < data.size(); ++i)
-      BOOST_CHECK_EQUAL(data[i], tmp[i]);
-    ifs.close();
-
     std::vector<int> in_data;
     io::File in_file("unversioned.tmp", io::mode::mREAD | io::mode::mBINARY);
-    BOOST_CHECK_THROW(in_file.read_pod(in_data), std::invalid_argument);
-    in_data.resize(data.size());
-    in_file.read_pod(in_data);
+    in_file.read_pod_container(in_data);
     for (std::size_t i = 0; i < data.size(); ++i)
       BOOST_CHECK_EQUAL(data[i], in_data[i]);
   }
@@ -141,5 +132,45 @@ BOOST_AUTO_TEST_CASE(append) {
     int j = 0;
     file.read_pod(j);
     BOOST_CHECK_EQUAL(i, j);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(pod_vectors) {
+  std::vector<int> data = {1, 2, 3, 4, 5, 6};
+  {
+    io::File file("pod_dispatched.tmp", io::mode::mWRITE | io::mode::mBINARY);
+    file.write_container(data);
+  }
+  {
+    io::File file("pod_dispatched.tmp", io::mode::mREAD | io::mode::mBINARY);
+    std::vector<int> comp;
+    file.read_container(comp);
+    BOOST_CHECK_EQUAL(data.size(), comp.size());
+    for (std::size_t i = 0; i < std::min(data.size(), comp.size()); ++i) {
+      BOOST_CHECK_EQUAL(data[i], comp[i]);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(serialisable_vectors) {
+  struct Ser : io::Serialisable {
+    Ser(int val = 0) : data(val) {}
+    int data;
+    void serialise(io::File &file) const { file.write_pod(data); }
+    void deserialise(io::File &file) { file.read_pod(data); }
+  };
+  std::vector<Ser> data = {{9}, {2}, {3}, {4}, {5}, {6}, {7}};
+  {
+    io::File file("ser_dispatched.tmp", io::mode::mWRITE | io::mode::mBINARY);
+    file.write_container(data);
+  }
+  {
+    io::File file("ser_dispatched.tmp", io::mode::mREAD | io::mode::mBINARY);
+    std::vector<Ser> comp;
+    file.read_container(comp);
+    BOOST_CHECK_EQUAL(data.size(), comp.size());
+    for (std::size_t i = 0; i < std::min(data.size(), comp.size()); ++i) {
+      BOOST_CHECK_EQUAL(data[i].data, comp[i].data);
+    }
   }
 }

@@ -7,6 +7,8 @@
 #include <string>
 #include <type_traits>
 
+#include "io/serialisable.hpp"
+
 namespace project_x {
 namespace io {
 namespace mode {
@@ -38,8 +40,21 @@ public:
   // POD types can be read/written directly
   template <typename pod_type> void write_pod(pod_type const &);
   template <typename pod_type> void read_pod(pod_type &);
-  template <typename pod_type> void write_pod(std::vector<pod_type> const &);
-  template <typename pod_type> void read_pod(std::vector<pod_type> &);
+
+  // sized containers
+  template <class container_type>
+  void write_pod_container(container_type const &);
+  template <class container_type> void read_pod_container(container_type &);
+  template <class container_type>
+  void write_serialisable_container(container_type const &);
+  template <class container_type>
+  void read_serialisable_container(container_type &);
+
+  // write different types of containers (POD/Serialisable) and switch between
+  // the appropriate types. Mostly provided for convenience, if you don't know
+  // for sure what kind of data your container holds
+  template <class container_type> void write_container(container_type const &);
+  template <class container_type> void read_container(container_type &);
 
   void close();
 
@@ -64,27 +79,91 @@ template <typename pod_type> void File::read_pod(pod_type &data) {
   stream.read(reinterpret_cast<char *>(&data), sizeof(data));
 }
 
-template <typename pod_type>
-void File::write_pod(std::vector<pod_type> const &container) {
-  static_assert(std::is_pod<pod_type>::value,
-                "Supplied type to writePOD is not a POD type");
+template <typename container_type>
+void File::write_pod_container(container_type const &container) {
+  std::uint64_t size = container.size();
+  write_pod(size);
   stream.write(reinterpret_cast<const char *>(container.data()),
-               sizeof(pod_type) * container.size());
+               sizeof(typename container_type::value_type) * size);
 }
 
-template <typename pod_type>
-void File::read_pod(std::vector<pod_type> &container) {
-  static_assert(std::is_pod<pod_type>::value,
-                "Supplied type to readPOD is not a POD type");
-
-  if (container.empty())
-    throw std::invalid_argument("Read-POD vector is empty. Did you forget to "
-                                "resize before calling read_pod(vector)?");
-
-  stream.read(reinterpret_cast<char *>(container.data()),
-              sizeof(pod_type) * container.size());
+template <typename container_type>
+void File::read_pod_container(container_type &container) {
+  std::uint_fast64_t size = 0;
+  read_pod(size);
+  container.resize(size);
+  // TODO this should be possible with container.data(), but results in const
+  // ptr, which cannot be filled.
+  auto ptr = &container[0];
+  stream.read(reinterpret_cast<char *>(ptr),
+              sizeof(typename container_type::value_type) * size);
 }
 
+template <typename container_type>
+void File::write_serialisable_container(container_type const &container) {
+  std::uint64_t size = container.size();
+  write_pod(size);
+  for (auto const &entity : container)
+    entity.serialise(*this);
+}
+
+template <typename container_type>
+void File::read_serialisable_container(container_type &container) {
+  std::uint_fast64_t size = 0;
+  read_pod(size);
+  container.resize(size);
+  for (auto &entity : container)
+    entity.deserialise(*this);
+}
+
+namespace detail {
+// Dispatch between POD / non POD files statically based on templates
+template <typename container_type>
+typename std::enable_if<std::is_pod<typename container_type::value_type>::value,
+                        void>::type
+dispatch_write(File &file, container_type const &container) {
+  file.write_pod_container(container);
+}
+
+template <typename container_type>
+typename std::enable_if<
+    !std::is_pod<typename container_type::value_type>::value, void>::type
+dispatch_write(File &file, container_type const &container) {
+  static_assert(
+      std::is_base_of<Serialisable, typename container_type::value_type>::value,
+      "Non POD types need to be serialisables to be read/written.");
+  file.write_serialisable_container(container);
+}
+
+template <typename container_type>
+typename std::enable_if<std::is_pod<typename container_type::value_type>::value,
+                        void>::type
+dispatch_read(File &file, container_type &container) {
+  file.read_pod_container(container);
+}
+
+template <typename container_type>
+typename std::enable_if<
+    !std::is_pod<typename container_type::value_type>::value, void>::type
+dispatch_read(File &file, container_type &container) {
+  static_assert(
+      std::is_base_of<Serialisable, typename container_type::value_type>::value,
+      "Non POD types need to be serialisables to be read/written.");
+  file.read_serialisable_container(container);
+}
+
+} // namespace detail
+
+// dispatch between POD / serialisable types
+template <typename container_type>
+void File::write_container(container_type const &container) {
+  detail::dispatch_write(*this, container);
+}
+
+template <typename container_type>
+void File::read_container(container_type &container) {
+  detail::dispatch_read(*this, container);
+}
 } // namespace io
 } // namespace project_x
 

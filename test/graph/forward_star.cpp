@@ -23,6 +23,7 @@ namespace details {
 template <typename graph_type>
 void run_test(graph_type &graph, std::vector<Edge> const &edges) {
   BOOST_CHECK_EQUAL(graph.number_of_nodes(), 7);
+  BOOST_CHECK_EQUAL(graph.number_of_edges(), 6);
   {
     auto edge_itr = graph.edges_begin();
     auto edge_end = graph.edges_end();

@@ -8,14 +8,14 @@ namespace project_x {
 namespace graph {
 
 // construction
-ForwardStar::ForwardStar() {}
-
 std::size_t ForwardStar::number_of_nodes() const {
   // a graph should never be empty. The factory always needs to add at least a
   // sentinel
   assert(!node_offsets.empty());
   return node_offsets.size() - 1;
 }
+
+std::size_t ForwardStar::number_of_edges() const { return edge_storage.size(); }
 
 // ranges / begin / end
 ForwardStar::node_iterator ForwardStar::node_begin() {
@@ -144,24 +144,18 @@ void ForwardStar::serialise(io::File &file) const {
   logger.message(log::Level::DEBUG,
                  "Serialise: writing " + std::to_string(count_offsets - 1) +
                      " nodes and " + std::to_string(count_targets) + " edges.");
-  file.write_pod(count_offsets);
-  file.write_pod(count_targets);
-  file.write_pod(node_offsets);
-  file.write_pod(edge_storage);
+  file.write_container(node_offsets);
+  file.write_container(edge_storage);
 }
 
 void ForwardStar::deserialise(io::File &file) {
+  file.read_container(node_offsets);
+  file.read_container(edge_storage);
   log::Logger logger;
-  std::uint64_t count_offsets = 0, count_targets = 0;
-  file.read_pod(count_offsets);
-  file.read_pod(count_targets);
   logger.message(log::Level::DEBUG,
-                 "Deserialise: got " + std::to_string(count_offsets - 1) +
-                     " nodes and " + std::to_string(count_targets) + " edges.");
-  node_offsets.resize(count_offsets);
-  edge_storage.resize(count_targets);
-  file.read_pod(node_offsets);
-  file.read_pod(edge_storage);
+                 "Deserialise: got " + std::to_string(node_offsets.size() - 1) +
+                     " nodes and " + std::to_string(edge_storage.size()) +
+                     " edges.");
 }
 
 } // namespace graph
