@@ -22,6 +22,8 @@ add_compile_options(${CMAKE_CXX_FLAGS} -Wuninitialized)
 add_compile_options(${CMAKE_CXX_FLAGS} -Wreturn-type)
 add_compile_options(${CMAKE_CXX_FLAGS} -Wunreachable-code)
 add_compile_options(${CMAKE_CXX_FLAGS} -Wstrict-overflow=2)
+# python bindings require Position Independent Code
+add_compile_options(${CMAKE_CXX_FLAGS} -fPIC)
 
 # General set-up
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.in

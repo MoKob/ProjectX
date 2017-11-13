@@ -9,6 +9,9 @@ add_library(xpython SHARED
 #required libs to build static Python library
 target_link_libraries(xpython
   Xbuilder
+  Xgraph
+  Xlogging
+  Xio
   ${MAYBE_COVERAGE_LIBRARIES}
   ${Boost_LIBRARIES})
 

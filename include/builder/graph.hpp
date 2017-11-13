@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "graph/id.hpp"
@@ -24,6 +25,7 @@ public:
   void build_graph_and_store(std::string const path);
 
 private:
+  std::unordered_map<std::uint64_t, std::uint64_t> id_map;
   std::vector<Edge> edges;
 };
 
