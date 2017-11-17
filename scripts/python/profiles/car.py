@@ -28,4 +28,4 @@ class OSMCar:
         if osm_way.tags['highway'] not in self.highway_speeds:
             raise InvalidArgument
 
-        return highways[osm_way.tags['highway']]
+        return highway_speeds[osm_way.tags['highway']]
