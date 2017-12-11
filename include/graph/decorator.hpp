@@ -20,8 +20,18 @@ namespace graph {
 // forward declaration to put this into the graph, not the graph::edge namespace
 class DecoratorFactory;
 
+// If decorations are kept separate of the graph, we can construct them without
+// a form of graph. This zero sized base-class ensures that we will not assign
+// unnecessary memory
+class SeparateDecorationBase : public io::Serialisable {
+public:
+  // doing nothing, indicating that there is no actual child
+  void serialise(io::File &) const {}
+  void deserialise(io::File &) {}
+};
+
 namespace edge {
-template <typename cost_type_t, class graph_type>
+template <typename cost_type_t, class graph_type = SeparateDecorationBase>
 class CostDecorator : public graph_type {
 public:
   using cost_type = cost_type_t;
@@ -44,7 +54,7 @@ private:
 // to connect with the graphs edges. Data on edges might be connected to street
 // names, road types or similar but could also represent the color of a public
 // transit line or other types of data.
-template <typename data_type_t, class graph_type>
+template <typename data_type_t, class graph_type = SeparateDecorationBase>
 class DataDecorator : public graph_type {
 public:
   using data_type = data_type_t;
@@ -68,7 +78,8 @@ private:
 // returned via the API. If you want to encode data that will be part of any
 // path in the graph, put it in here. All the contents will be added to the
 // resulting path.
-template <class graph_type> class ByteDecorator : public graph_type {
+template <class graph_type = SeparateDecorationBase>
+class ByteDecorator : public graph_type {
 public:
   using byte_string = std::string;
   using wrapped_byte_string = io::SerialisableContainer<std::string>;

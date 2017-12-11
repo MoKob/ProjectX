@@ -10,6 +10,10 @@ namespace project_x {
 namespace graph {
 
 struct WeightTimeDistance {
+  using weight_type = std::uint32_t;
+  using time_type = std::uint32_t;
+  using distance_type = std::uint32_t;
+
   std::uint32_t weight;
   std::uint32_t time;
   std::uint32_t distance;
