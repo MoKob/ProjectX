@@ -21,7 +21,14 @@ class ImportHandler(osmium.SimpleHandler):
     # add a way (checked) to the builder 
     def add_way(self,osm_way):
         for cur, nex in zip(osm_way.nodes,islice(osm_way.nodes,1,None)):
-            self.builder.add_edge(int(str(cur)), int(str(nex)), osm_way.tags['highway'])
+            source = int(str(cur))
+            target = int(str(nex))
+            # segment length in meters
+            length = get_distance(osm_way,source,target);
+            # time in seconds
+            time = length / self.profile.get_speed(osm_way.tags['highway']) / 3.6
+            # shortest time routing in deci-sceonds, all values stored with deci-accuracy
+            self.builder.add_edge(source, target, 10 * time, 10 * time, 10 * length, osm_way.tags['highway'])
         
 # running the handler
 if __name__ == '__main__':
