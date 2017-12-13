@@ -14,14 +14,21 @@ class ImportHandler(osmium.SimpleHandler):
 
     def way(self, osm_way):
         # check if the way has a highway tag
-        if 'highway' in osm_way.tags:
-            if self.profile.valid(osm_way):
-                self.add_way(osm_way)
+        if self.profile.valid(osm_way):
+            self.add_way(osm_way)
 
     # add a way (checked) to the builder 
     def add_way(self,osm_way):
         for cur, nex in zip(osm_way.nodes,islice(osm_way.nodes,1,None)):
-            self.builder.add_edge(int(str(cur)), int(str(nex)), osm_way.tags['highway'])
+            source = int(str(cur))
+            target = int(str(nex))
+            #distance in meters
+            length = 1.0 # get_distance(osm_way,cur,nex)
+            #time in seconds
+            time = length / self.profile.get_speed(osm_way)
+            #compute a good routing weight: TODO
+            weight = time
+            self.builder.add_edge(source, target, int(10*weight), int(10*time), int(10*length), osm_way.tags['highway'])
         
 # running the handler
 if __name__ == '__main__':
@@ -29,7 +36,7 @@ if __name__ == '__main__':
         print('Usage: python import-osm.py <osmfile> <output>')
         sys.exit(0)
    
-    builder = xpython.importer.GraphBuilder()
+    builder = xpython.importer.WeightTimeDistanceGraph()
     importer = ImportHandler(OSMCar(),builder)
     importer.apply_file(sys.argv[1])
-    builder.build_graph_and_store(sys.argv[2]) 
+    builder.build_weighted_graph_and_store(sys.argv[2]) 

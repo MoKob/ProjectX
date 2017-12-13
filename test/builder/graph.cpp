@@ -17,7 +17,7 @@ using namespace project_x;
 BOOST_AUTO_TEST_CASE(construct_builder) {
   // 1 -> 2 <-> 3    4 <-> 5
   // 0 -> 1 <-> 2    3 <-> 4 mapped
-  builder::Graph builder;
+  builder::Graph<builder::Edge<std::string>> builder;
   builder.add_edge(1, 2, "");
   builder.add_edge(2, 3, "");
   builder.add_edge(3, 2, "");

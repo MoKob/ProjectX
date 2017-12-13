@@ -10,9 +10,13 @@ namespace project_x {
 namespace graph {
 
 struct WeightTimeDistance {
-  std::uint32_t weight;
-  std::uint32_t time;
-  std::uint32_t distance;
+  using weight_type = std::uint32_t;
+  using time_type = std::uint32_t;
+  using distance_type = std::uint32_t;
+
+  weight_type weight;
+  time_type time;
+  distance_type distance;
 
   bool operator<(WeightTimeDistance const &other) const;
   bool operator<=(WeightTimeDistance const &other) const;
