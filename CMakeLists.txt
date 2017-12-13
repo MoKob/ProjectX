@@ -62,7 +62,6 @@ if(SANITIZE)
 endif()
 
 # Sub-Projects
-add_subdirectory(src/builder)
 add_subdirectory(src/graph)
 add_subdirectory(src/algorithm)
 add_subdirectory(src/log)

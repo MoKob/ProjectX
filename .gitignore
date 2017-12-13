@@ -36,3 +36,4 @@
 
 # directories
 build/*
+*pycache*
