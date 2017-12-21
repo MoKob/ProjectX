@@ -12,7 +12,7 @@ option(COVERAGE "Link coverage libraries and generate code coverage data" OFF)
 option(SANITIZE "Enable adress sanitizer" OFF)
 
 # Compilation
-add_compile_options(${CMAKE_CXX_FLAGS} -std=c++14)
+add_compile_options(${CMAKE_CXX_FLAGS} -std=c++17)
 add_compile_options(${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden)
 add_compile_options(${CMAKE_CXX_FLAGS} -W)
 add_compile_options(${CMAKE_CXX_FLAGS} -Wall)
