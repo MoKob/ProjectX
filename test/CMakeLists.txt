@@ -17,6 +17,7 @@ ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 
 add_subdirectory(graph)
 add_subdirectory(algorithm)
+add_subdirectory(container)
 add_subdirectory(builder)
 add_subdirectory(io)
 add_subdirectory(logging)
