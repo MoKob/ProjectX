@@ -2,10 +2,7 @@
 #include "graph/forward_star.hpp"
 #include "graph/forward_star_factory.hpp"
 #include "graph/id.hpp"
-#include "log/logger.hpp"
 
-#include <algorithm>
-#include <exception>
 #include <vector>
 
 // make sure we get a new main function here
