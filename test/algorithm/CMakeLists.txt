@@ -9,3 +9,4 @@ set(testINCLUDES
   )
 
 add_unit_test(scc scc.cpp "${testLIBS}" "${testINCLUDES}")
+add_unit_test(dijkstra dijkstra.cpp "${testLIBS}" "${testINCLUDES}")
