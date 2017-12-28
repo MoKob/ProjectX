@@ -31,4 +31,6 @@ BOOST_AUTO_TEST_CASE(uf_algo) {
   uf.unite(uf.find(0), uf.find(5));
   BOOST_CHECK(uf.find(4) != uf.find(5));
   BOOST_CHECK_EQUAL(uf.find(0), uf.find(5));
+  uf.unite(uf.find(6), uf.find(0));
+  BOOST_CHECK_EQUAL(uf.find(6), uf.find(5));
 }
