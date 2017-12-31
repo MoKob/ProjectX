@@ -7,8 +7,10 @@ namespace traits {
 // a list of tags for each strong typedef
 enum class typemap {
   // geometric types
-  tagLongitude,
-  tagLatitude,
+  tagWGSLongitude,
+  tagWGSLatitude,
+  tagWebMercLongitude,
+  tagWebMercLatitude,
   // ID types
   tagNodeID,
   tagEdgeID
