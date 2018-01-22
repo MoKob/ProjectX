@@ -1,5 +1,6 @@
 set (algorithm_SOURCES
-  "scc.cpp")
+  "scc.cpp"
+  "union_find.cpp")
 
 add_library(Xalgorithm STATIC
   ${algorithm_SOURCES})
